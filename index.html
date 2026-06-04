@@ -3,6 +3,12 @@
 
 <head>
     <meta charset="UTF-8">
+    <!-- Run before any rendering: disable scroll restoration so refresh always shows the intro -->
+    <script>
+        if ("scrollRestoration" in history) history.scrollRestoration = "manual";
+        window.scrollTo(0, 0);
+        if (window.location.hash) history.replaceState(null, "", window.location.pathname);
+    </script>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>NEXUS // Creative Front-End Developer</title>
     <meta name="description"
@@ -25,29 +31,8 @@
 
     <!-- Cinematic Preloader -->
     <div class="preloader" id="preloader">
-        <div class="preloader-bg"></div>
         <div class="preloader-content">
-            <!-- Glassmorphism capsule panel with 4 colorless glass icons -->
-            <div class="glass-capsule-wrapper loading-capsule-wrap">
-                <div class="glass-capsule loading-capsule">
-                    <div class="glass-icons-container">
-                        <div class="glass-icon-item colorless-glass-icon" title="HTML5"><i
-                                class="fa-brands fa-html5"></i></div>
-                        <div class="glass-icon-item colorless-glass-icon" title="CSS3"><i
-                                class="fa-brands fa-css3-alt"></i></div>
-                        <div class="glass-icon-item colorless-glass-icon" title="JavaScript"><i
-                                class="fa-brands fa-js"></i></div>
-                        <div class="glass-icon-item colorless-glass-icon" title="React"><i
-                                class="fa-brands fa-react"></i></div>
-                    </div>
-                </div>
-            </div>
-
-            <h2 class="preloader-text" id="preloader-text">Welcome To Nexus Studio</h2>
-            <div class="preloader-bar-wrap">
-                <div class="preloader-bar" id="preloader-bar"></div>
-            </div>
-            <div class="preloader-subtitle" id="preloader-subtitle">Mohamed El-Hefnawy</div>
+            <h1 class="intro-name" id="intro-name">NEXUS STUDIO</h1>
         </div>
     </div>
 
@@ -75,6 +60,7 @@
             </a>
 
             <nav class="nav-links">
+                <a href="#" class="nav-link magnetic" data-strength="15"><span>Home</span></a>
                 <a href="#about" class="nav-link magnetic" data-strength="15"><span>About</span></a>
                 <a href="#services" class="nav-link magnetic" data-strength="15"><span>Services</span></a>
                 <a href="#projects" class="nav-link magnetic" data-strength="15"><span>Work</span></a>
@@ -111,6 +97,7 @@
         </button>
         <div class="menu-overlay-content">
             <div class="menu-nav-links">
+                <a href="#" class="menu-nav-link">Home</a>
                 <a href="#about" class="menu-nav-link">About</a>
                 <a href="#services" class="menu-nav-link">Services</a>
                 <a href="#projects" class="menu-nav-link">Selected Work</a>
@@ -222,7 +209,6 @@
                 <!-- Section label — stays visible -->
                 <div class="services-label-row">
                     <span class="section-tag">02 &lt;Services&gt;</span>
-                    <span class="services-count-label">— 05 Services</span>
                 </div>
 
                 <!-- Stacked service rows (all hidden initially, revealed by GSAP) -->
@@ -239,7 +225,6 @@
                                     brand identity, rank on search engines, and attract new customers around the clock.
                                 </p>
                             </div>
-                            <div class="svc-arrow"><i class="fa-solid fa-arrow-right"></i></div>
                         </div>
                         <div class="svc-divider"></div>
                     </div>
@@ -255,7 +240,6 @@
                                     intuitive shopping carts, and optimized checkout flows that convert visitors into
                                     buyers.</p>
                             </div>
-                            <div class="svc-arrow"><i class="fa-solid fa-arrow-right"></i></div>
                         </div>
                         <div class="svc-divider"></div>
                     </div>
@@ -270,7 +254,6 @@
                                 <p class="svc-desc">Conversion-focused landing pages engineered to capture leads,
                                     promote campaigns, and turn first-time visitors into loyal customers — fast.</p>
                             </div>
-                            <div class="svc-arrow"><i class="fa-solid fa-arrow-right"></i></div>
                         </div>
                         <div class="svc-divider"></div>
                     </div>
@@ -285,7 +268,6 @@
                                 <p class="svc-desc">Unique personal portfolios and digital résumés with fluid motion
                                     transitions that showcase your work beautifully and leave a lasting impression.</p>
                             </div>
-                            <div class="svc-arrow"><i class="fa-solid fa-arrow-right"></i></div>
                         </div>
                         <div class="svc-divider"></div>
                     </div>
@@ -300,7 +282,6 @@
                                 <p class="svc-desc">Powerful admin dashboards, client portals, and user control panels
                                     that give you full command over your data, analytics, and platform settings.</p>
                             </div>
-                            <div class="svc-arrow"><i class="fa-solid fa-arrow-right"></i></div>
                         </div>
                         <div class="svc-divider"></div>
                     </div>
@@ -554,31 +535,7 @@
                             high-fidelity visual design projects.
                         </p>
 
-                        <div class="contact-details">
-                            <div class="contact-detail-item magnetic" data-strength="10">
-                                <div class="detail-icon"><i class="fa-brands fa-whatsapp"></i></div>
-                                <div class="detail-text">
-                                    <span class="detail-label">WhatsApp</span>
-                                    <a href="https://wa.me/201554003078" class="detail-value" target="_blank">+20 155
-                                        400 3078</a>
-                                </div>
-                            </div>
-                            <div class="contact-detail-item magnetic" data-strength="10">
-                                <div class="detail-icon"><i class="fa-brands fa-facebook-f"></i></div>
-                                <div class="detail-text">
-                                    <span class="detail-label">Facebook</span>
-                                    <a href="https://www.facebook.com/share/1KfC5BiBzN/" class="detail-value"
-                                        target="_blank">Mohamed El-Hefnawy</a>
-                                </div>
-                            </div>
-                            <div class="contact-detail-item magnetic" data-strength="10">
-                                <div class="detail-icon"><i class="fa-brands fa-instagram"></i></div>
-                                <div class="detail-text">
-                                    <span class="detail-label">Instagram</span>
-                                    <a href="#" class="detail-value">@mohamed.elhefnawy</a>
-                                </div>
-                            </div>
-                        </div>
+
                     </div>
 
                     <div class="contact-form-wrapper scroll-reveal">
@@ -618,7 +575,7 @@
         <div class="footer-container">
             <div class="footer-brand">
                 <span class="footer-logo">NEXUS<span class="logo-dot">.</span></span>
-                <p class="footer-tagline">Crafting motion structures for the next web.</p>
+
             </div>
 
             <div class="footer-divider"></div>

@@ -3,6 +3,20 @@
    ========================================================================== */
 
 document.addEventListener("DOMContentLoaded", () => {
+    // ── Force home screen on every refresh ──────────────────────────────────
+    // Disable browser's automatic scroll restoration so it never jumps back
+    // to a previous scroll position or anchor hash on page load.
+    if ("scrollRestoration" in history) {
+        history.scrollRestoration = "manual";
+    }
+    // Immediately snap to the very top before anything renders
+    window.scrollTo({ top: 0, left: 0, behavior: "instant" });
+    // Strip any hash from the URL so the page always starts at home
+    if (window.location.hash) {
+        history.replaceState(null, "", window.location.pathname + window.location.search);
+    }
+    // ────────────────────────────────────────────────────────────────────────
+
     // Register GSAP ScrollTrigger
     gsap.registerPlugin(ScrollTrigger);
 
@@ -215,21 +229,21 @@ function initNavbarGlow() {
     const floatingBtn = document.getElementById("floating-menu-btn");
     if (!navbar) return;
 
-    let lastScrollY    = 0;      // previous scroll position
-    let isHidden       = false;  // current hide state
-    let isAnimating    = false;  // guard against mid-animation triggers
-    const HIDE_OFFSET  = 80;     // px from top before hide kicks in
+    let lastScrollY = 0;      // previous scroll position
+    let isHidden = false;  // current hide state
+    let isAnimating = false;  // guard against mid-animation triggers
+    const HIDE_OFFSET = 80;     // px from top before hide kicks in
 
     function hideNavbar() {
         if (isHidden || isAnimating) return;
         isAnimating = true;
-        isHidden    = true;
+        isHidden = true;
 
         gsap.to(navbar, {
-            yPercent : -100,   // slide exactly 100% of its own height off-screen
-            opacity  : 0,
-            duration : 0.40,
-            ease     : "power3.in",
+            yPercent: -100,   // slide exactly 100% of its own height off-screen
+            opacity: 0,
+            duration: 0.40,
+            ease: "power3.in",
             onComplete() {
                 navbar.style.pointerEvents = "none";
                 isAnimating = false;
@@ -242,14 +256,14 @@ function initNavbarGlow() {
     function showNavbar() {
         if (!isHidden || isAnimating) return;
         isAnimating = true;
-        isHidden    = false;
+        isHidden = false;
         navbar.style.pointerEvents = "";
 
         gsap.to(navbar, {
-            yPercent : 0,
-            opacity  : 1,
-            duration : 0.50,
-            ease     : "power3.out",
+            yPercent: 0,
+            opacity: 1,
+            duration: 0.50,
+            ease: "power3.out",
             onComplete() { isAnimating = false; }
         });
 
@@ -507,82 +521,70 @@ function prepareHeroSubtitle() {
 
 function initPreloader() {
     const preloader = document.getElementById("preloader");
-    const preloaderText = document.getElementById("preloader-text");
-    const preloaderBar = document.getElementById("preloader-bar");
-    if (!preloader || !preloaderText || !preloaderBar) {
+    const introName = document.getElementById("intro-name");
+    if (!preloader || !introName) {
         playEntranceReveal();
         return;
     }
 
-    // 1. Split preloader text into characters
-    const text = preloaderText.textContent.trim();
-    preloaderText.innerHTML = text.split("").map(char => {
-        if (char === " ") return `<span class="preloader-char">&nbsp;</span>`;
-        return `<span class="preloader-char">${char}</span>`;
+    // Split text into characters
+    const text = introName.textContent.trim();
+    introName.innerHTML = text.split("").map(char => {
+        if (char === " ") return `<span class="intro-char char-space">&nbsp;</span>`;
+        return `<span class="intro-char">${char}</span>`;
     }).join("");
 
-    const chars = preloaderText.querySelectorAll(".preloader-char");
+    const chars = introName.querySelectorAll(".intro-char:not(.char-space)");
 
     // Disable scrolling while loading
     document.body.style.overflow = "hidden";
 
-    // 2. Preloader Animation Timeline
+    // Set initial state (0s)
+    gsap.set(chars, {
+        opacity: 0,
+        y: 30,
+        filter: "blur(20px)",
+        scale: 1.0
+    });
+
     const tl = gsap.timeline({
         onComplete: () => {
-            // Re-enable overflow
             document.body.style.overflow = "";
-            // Trigger main page reveal
-            playEntranceReveal();
+            preloader.style.display = "none";
         }
     });
 
-    // Character entrance
+    // 0.3s: Text fades in, blur decreases from 20px to 0px, slight upward movement
+    // 1s: Letters reveal with stagger effect, smooth cinematic easing, elegant luxury motion
+    // 1.8s: Text fully visible, holds briefly
     tl.to(chars, {
         opacity: 1,
         y: 0,
-        scale: 1,
         filter: "blur(0px)",
-        stagger: 0.04,
-        duration: 1.0,
-        ease: "expo.out"
-    });
+        stagger: 0.06,
+        duration: 0.8,
+        ease: "power4.out"
+    }, 0.3);
 
-    // Progress bar fill
-    tl.to(preloaderBar, {
-        width: "100%",
-        duration: 2.0,
-        ease: "power2.inOut"
-    }, "-=0.6");
-
-    // Fade in subtitle
-    tl.to("#preloader-subtitle", {
-        opacity: 0.85,
-        duration: 1.0,
-        ease: "power2.out"
-    }, "-=1.4");
-
-    // Glow scale sweep on text
+    // 2.5s: Text scales from 100% to 115%, opacity fades to 0, slight blur returns
     tl.to(chars, {
-        textShadow: "0 0 25px rgba(168, 85, 247, 0.8), 0 0 45px rgba(168, 85, 247, 0.4)",
-        color: "var(--color-accent-glow)",
-        duration: 0.6,
-        ease: "power2.out"
-    }, "-=0.6");
-
-    // Preloader exit transition
-    tl.to(preloader, {
-        y: "-100%",
-        duration: 1.0,
-        ease: "power4.inOut"
-    }, "+=0.2");
-
-    // Also fade/scale out content slightly before exiting
-    tl.to([preloaderText, "#preloader-subtitle"], {
-        y: -40,
+        scale: 1.15,
         opacity: 0,
+        filter: "blur(12px)",
+        stagger: 0.03,
         duration: 0.6,
-        ease: "power3.in"
-    }, "-=1.0");
+        ease: "power3.inOut"
+    }, 2.5);
+
+    // 2.5s: Screen transitions smoothly into homepage (preloader overlay opacity fades to 0)
+    tl.to(preloader, {
+        opacity: 0,
+        duration: 0.7,
+        ease: "power3.inOut"
+    }, 2.5);
+
+    // 2.5s: Proactively trigger homepage content reveal for seamless overlay blend
+    tl.call(playEntranceReveal, null, 2.5);
 }
 
 function playEntranceReveal() {
@@ -1067,56 +1069,71 @@ function initHero3DIcon() {
    ========================================================================== */
 
 function initServicesHorizontalScroll() {
-    const section   = document.querySelector(".services-section");
-    const pinWrap   = document.querySelector(".services-pin-wrap");
-    const rows      = gsap.utils.toArray(".svc-row");
+    const section = document.querySelector(".services-section");
+    const pinWrap = document.querySelector(".services-pin-wrap");
+    const rows = gsap.utils.toArray(".svc-row");
 
     if (!section || !pinWrap || rows.length === 0) return;
 
-    /* ----------------------------------------------------------
-       Each row starts fully hidden (clipped up + transparent).
-       They are revealed one-by-one as the user scrolls while
-       the section is pinned. Scrolling back reverses the process.
-    ---------------------------------------------------------- */
-
-    // Set initial hidden state for all rows
-    gsap.set(rows, {
-        opacity: 0,
-        y: 40,
-        clipPath: "inset(0 0 100% 0)"   // clipped from the bottom
-    });
-
-    // The total extra scroll distance = (number of rows) * scrollPerRow px
-    const scrollPerRow = 220;   // px of scroll travel to reveal each row
-    const totalExtra   = rows.length * scrollPerRow;
-
-    /*
-      We pin the section for (totalExtra) extra pixels of scroll,
-      then within that scroll range we scrub the rows in sequence.
-    */
-    const tl = gsap.timeline({
-        scrollTrigger: {
-            trigger: section,
-            start: "top top",
-            end: `+=${totalExtra}`,
-            pin: true,
-            scrub: 0.8,           // smooth scrub for reversibility
-            anticipatePin: 1,
-            invalidateOnRefresh: true
+    // Set initial hidden states for entry slide-up animation
+    rows.forEach(row => {
+        const rowInner = row.querySelector(".svc-row-inner");
+        const divider = row.querySelector(".svc-divider");
+        gsap.set(rowInner, {
+            opacity: 0,
+            y: 100
+        });
+        if (divider) {
+            gsap.set(divider, {
+                scaleX: 0,
+                transformOrigin: "left center"
+            });
         }
     });
 
-    // Add each row to the timeline sequentially
-    rows.forEach((row, i) => {
-        const pct = i / rows.length;     // normalised start position [0 … 1)
+    // Batch scroll-triggered slide-up reveal with stagger
+    ScrollTrigger.batch(rows, {
+        start: "top 85%", // Triggers when the top of each row reaches 85% viewport height
+        onEnter: (batch) => {
+            batch.forEach((row, i) => {
+                const rowInner = row.querySelector(".svc-row-inner");
+                const divider = row.querySelector(".svc-divider");
 
-        tl.to(row, {
-            opacity: 1,
-            y: 0,
-            clipPath: "inset(0 0 0% 0)",
-            duration: 0.18,        // fraction of the total timeline
-            ease: "power2.out"
-        }, pct);
+                gsap.to(rowInner, {
+                    opacity: 1,
+                    y: 0,
+                    duration: 1.0,
+                    delay: i * 0.15, // 0.15s stagger delay between items entering together
+                    ease: "power4.out"
+                });
+
+                if (divider) {
+                    gsap.to(divider, {
+                        scaleX: 1,
+                        duration: 0.8,
+                        delay: i * 0.15,
+                        ease: "power2.out"
+                    });
+                }
+            });
+        },
+        once: true
+    });
+
+    // Subtle scroll parallax effect on each row using smooth scrub
+    const parallaxOffsets = [-30, -15, 0, 15, 30]; // px offsets for rows 0 to 4
+    rows.forEach((row, i) => {
+        const offset = parallaxOffsets[i] !== undefined ? parallaxOffsets[i] : 0;
+        gsap.to(row, {
+            y: offset,
+            ease: "none",
+            scrollTrigger: {
+                trigger: row,
+                start: "top bottom",
+                end: "bottom top",
+                scrub: 1.2
+            }
+        });
     });
 }
 
