@@ -1607,28 +1607,27 @@ body.menu-active .floating-menu-btn {
     background: linear-gradient(90deg, rgba(168, 85, 247, 0.5), transparent);
 }
 
-/* Projects horizontal pair */
+/* Projects vertical stack */
 .proj-list {
-    max-width: 140rem;
+    max-width: 100rem;
     margin: 0 auto;
     padding: 0 4rem;
     display: flex;
-    flex-direction: row;
-    gap: 0;
+    flex-direction: column;
+    gap: 6rem;
     margin-top: 5rem;
-    align-items: stretch;
     position: relative;
 }
 
-/* Vertical divider between the two cards */
+/* Horizontal divider between stacked cards */
 .proj-list .proj-row:not(:last-child)::after {
     content: '';
     position: absolute;
-    right: -1px;
-    top: 0;
-    bottom: 0;
-    width: 1px;
-    background: linear-gradient(180deg,
+    left: 4rem;
+    right: 4rem;
+    bottom: -3rem;
+    height: 1px;
+    background: linear-gradient(90deg,
             transparent 0%,
             rgba(168, 85, 247, 0.3) 20%,
             rgba(168, 85, 247, 0.3) 80%,
@@ -1636,29 +1635,44 @@ body.menu-active .floating-menu-btn {
     pointer-events: none;
 }
 
-/* Single project card */
+/* Single project card — two-column: text left, frame right */
 .proj-row {
-    display: flex;
-    flex-direction: column;
-    gap: 0;
-    align-items: stretch;
+    display: grid;
+    grid-template-columns: 1fr 1.6fr;
+    grid-template-rows: auto auto;
+    column-gap: 5rem;
+    row-gap: 0;
+    align-items: start;
     position: relative;
-    flex: 1 1 0;
+    flex: unset;
     min-width: 0;
     padding: 4rem;
-    transition: background 0.4s ease;
+    border-radius: 2rem;
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    background: rgba(18, 18, 26, 0.3);
+    transition: background 0.4s ease, border-color 0.4s ease, box-shadow 0.4s ease;
 }
 
 .proj-row:hover {
-    background: rgba(168, 85, 247, 0.03);
+    background: rgba(168, 85, 247, 0.05);
+    border-color: rgba(168, 85, 247, 0.18);
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.35), 0 0 40px rgba(168, 85, 247, 0.06);
 }
 
-/* Number + meta header row */
+/* Header row spans only left column */
 .proj-row-header {
     display: flex;
     align-items: flex-start;
     gap: 2rem;
-    margin-bottom: 2.4rem;
+    grid-column: 1;
+    grid-row: 1;
+}
+
+/* Frame shell spans full right column, both rows */
+.proj-frame-shell {
+    grid-column: 2;
+    grid-row: 1 / 3;
+    align-self: center;
 }
 
 /* Large number */
@@ -1682,13 +1696,15 @@ body.menu-active .floating-menu-btn {
     filter: drop-shadow(0 0 35px rgba(168, 85, 247, 0.45));
 }
 
-/* Right column: meta info + frame */
+/* Left text column */
 .proj-row-right {
     display: flex;
     flex-direction: column;
     gap: 0;
     min-width: 0;
     flex: 1;
+    grid-column: 1;
+    grid-row: 2;
 }
 
 /* Meta: tag, title, desc, link */
@@ -1799,7 +1815,6 @@ body.menu-active .floating-menu-btn {
     border: 1px solid rgba(255, 255, 255, 0.07);
     box-shadow: 0 20px 50px rgba(0, 0, 0, 0.45);
     transition: box-shadow 0.5s ease, border-color 0.5s ease;
-    margin-top: 2.8rem;
 }
 
 .proj-row:hover .proj-frame-shell {
@@ -1888,28 +1903,36 @@ body.menu-active .floating-menu-btn {
 
 /* Responsive */
 @media (max-width: 1100px) {
-
-    /* Stack projects vertically on smaller screens */
     .proj-list {
-        flex-direction: column;
-        gap: 7rem;
         padding: 0 2rem;
-    }
-
-    .proj-row {
-        flex: unset;
-        min-width: unset;
     }
 }
 
 @media (max-width: 900px) {
     .proj-row {
         grid-template-columns: 1fr;
-        gap: 2rem;
+        grid-template-rows: auto auto auto;
+        row-gap: 2.5rem;
+        column-gap: 0;
+    }
+
+    .proj-row-header {
+        grid-column: 1;
+        grid-row: 1;
+    }
+
+    .proj-row-right {
+        grid-column: 1;
+        grid-row: 2;
+    }
+
+    .proj-frame-shell {
+        grid-column: 1;
+        grid-row: 3;
     }
 
     .proj-row-num {
-        font-size: 8rem;
+        font-size: 7rem;
         line-height: 1;
     }
 }
