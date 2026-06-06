@@ -34,8 +34,7 @@ document.addEventListener("DOMContentLoaded", () => {
     initFooterAnimation();
 
     // Hide main elements immediately to prevent flash of content during loading
-    gsap.set(".reveal-element", { opacity: 0, y: 30 });
-    gsap.set(".navbar", { y: -80, opacity: 0 });
+    gsap.set(".navbar", { y: -100, opacity: 0 });
 
     // Core Timelines
     prepareHeroSubtitle();
@@ -503,19 +502,19 @@ function prepareHeroSubtitle() {
         const words = text.split(/\s+/);
         subtitle.innerHTML = words.map(word => {
             return `<span class="word-wrapper" style="display: inline-block; overflow: hidden; vertical-align: bottom; line-height: 1.3;">` +
-                `<span class="hero-sub-word" style="display: inline-block; transform: translate3d(0, 110%, 0); opacity: 0; filter: blur(3px); will-change: transform, opacity, filter;">${word}</span>` +
+                `<span class="hero-sub-word" style="display: inline-block; opacity: 0; will-change: transform, opacity, filter;">${word}</span>` +
                 `</span>`;
         }).join(" ");
     }
 
-    // Split hero title into clip-masked word spans (same mechanic)
+    // Split hero title into clip-masked word spans with 3D perspective
     const title = document.querySelector(".hero-title");
     if (title) {
         const titleText = title.textContent.trim();
         const titleWords = titleText.split(/\s+/);
         title.innerHTML = titleWords.map(word => {
-            return `<span class="title-word-wrapper" style="display: inline-block; overflow: hidden; vertical-align: bottom; line-height: 1.1;">` +
-                `<span class="hero-title-word" style="display: inline-block; transform: translate3d(0, 110%, 0); opacity: 0; filter: blur(6px); will-change: transform, opacity, filter;">${word}</span>` +
+            return `<span class="title-word-wrapper" style="display: inline-block; overflow: hidden; vertical-align: bottom; line-height: 1.1; perspective: 800px;">` +
+                `<span class="hero-title-word" style="display: inline-block; opacity: 0; will-change: transform, opacity, filter; transform-origin: 50% 100%;">${word}</span>` +
                 `</span>`;
         }).join(" ");
     }
@@ -598,56 +597,88 @@ function initPreloader() {
 }
 
 function playEntranceReveal() {
-    // Prep elements
-    gsap.set(".reveal-element", { opacity: 0, y: 30 });
-    gsap.set(".navbar", { y: -80, opacity: 0 });
+    const isMobile = window.matchMedia("(max-width: 768px)").matches;
 
-    const timeline = gsap.timeline();
+    // ── Phase 0: Lock all initial states ────────────────────────────────────
+    gsap.set(".navbar", { y: -100, opacity: 0 });
+    gsap.set(".hero-backdrop-glow", { opacity: 0, scale: 0.65 });
+    gsap.set(".hero-badge", { opacity: 0, scale: 0.55, y: -16, filter: "blur(8px)" });
+    gsap.set(".hero-title-word", { yPercent: 115, opacity: 0, rotateX: -80, filter: "blur(12px)" });
+    gsap.set(".hero-divider", { scaleX: 0, opacity: 0, transformOrigin: "left center" });
+    gsap.set(".hero-sub-word", { yPercent: 120, opacity: 0, filter: "blur(4px)" });
+    gsap.set(".hero-ctas", { opacity: 0, y: 55, filter: "blur(8px)" });
+    gsap.set(".hero-visual", { opacity: 0, x: isMobile ? 0 : 90, scale: 0.85, filter: "blur(14px)" });
+    gsap.set(".hero-3d-container", { scale: 0.72, opacity: 0 });
+    gsap.set(".hero-scroll-indicator", { opacity: 0, y: 24 });
 
-    // 1. Reveal Navbar
-    timeline.to(".navbar", {
-        y: 0,
+    const tl = gsap.timeline();
+
+    // ── Phase 1: Atmospheric glow blooms in (0s) ────────────────────────────
+    tl.to(".hero-backdrop-glow", {
+        opacity: 1, scale: 1.2,
+        duration: 2.8, ease: "power2.out"
+    }, 0);
+
+    // ── Phase 2: Navbar descends cleanly (0.1s) ─────────────────────────────
+    tl.to(".navbar", {
+        y: 0, opacity: 1,
+        duration: 1.05, ease: "power3.out"
+    }, 0.1);
+
+    // ── Phase 3: Badge drops in as eyebrow label (0.45s) ────────────────────
+    tl.to(".hero-badge", {
+        opacity: 1, scale: 1, y: 0, filter: "blur(0px)",
+        duration: 0.72, ease: "back.out(2.5)"
+    }, 0.45);
+
+    // ── Phase 4: Title words 3D-flip up from below (0.7s) ───────────────────
+    tl.to(".hero-title-word", {
+        yPercent: 0, opacity: 1, rotateX: 0, filter: "blur(0px)",
+        stagger: { amount: 0.3, ease: "power2.inOut" },
+        duration: 1.15, ease: "power4.out",
+        transformOrigin: "50% 100%"
+    }, 0.7);
+
+    // ── Phase 5: Divider line draws left → right under the title (1.35s) ────
+    tl.to(".hero-divider", {
+        scaleX: 1, opacity: 1,
+        duration: 0.85, ease: "power3.inOut"
+    }, 1.35);
+
+    // ── Phase 6: Subtitle words cascade up (1.5s) ───────────────────────────
+    tl.to(".hero-sub-word", {
+        yPercent: 0, opacity: 1, filter: "blur(0px)",
+        stagger: { amount: 0.55, ease: "power1.inOut" },
+        duration: 0.9, ease: "power3.out"
+    }, 1.5);
+
+    // ── Phase 7: CTA buttons emerge with a soft spring (2.0s) ───────────────
+    tl.to(".hero-ctas", {
+        opacity: 1, y: 0, filter: "blur(0px)",
+        duration: 1.05, ease: "back.out(1.5)"
+    }, 2.0);
+
+    // ── Phase 8: 3D visual sweeps in from the right (0.75s) ─────────────────
+    tl.to(".hero-visual", {
+        opacity: 1, x: 0, scale: 1, filter: "blur(0px)",
+        duration: 1.5, ease: "power3.out"
+    }, 0.75);
+
+    // The inner 3D canvas zooms and materialises slightly delayed
+    tl.to(".hero-3d-container", {
+        scale: 1,
         opacity: 1,
-        duration: 1.2,
+        duration: 1.9,
         ease: "power4.out"
-    });
+    }, 0.9);
 
-    // 2. Word-by-word slide-up reveal for hero title "Nexus Studio"
-    timeline.to(".hero-title-word", {
-        y: "0%",
-        opacity: 1,
-        filter: "blur(0px)",
-        stagger: 0.18,
-        duration: 1.1,
-        ease: "expo.out"
-    }, "-=0.7");
-
-    // 3. Stagger reveal sub headers & buttons
-    timeline.to(".reveal-element", {
+    // ── Phase 9: Scroll indicator pulses in last (2.5s) ─────────────────────
+    tl.to(".hero-scroll-indicator", {
         opacity: 1,
         y: 0,
-        stagger: 0.15,
-        duration: 1.1,
-        ease: "power3.out"
-    }, "-=0.9");
-
-    // 4. Word-by-word reveal for the hero subtitle
-    timeline.to(".hero-sub-word", {
-        y: "0%",
-        opacity: 1,
-        filter: "blur(0px)",
-        stagger: 0.02,
-        duration: 0.85,
-        ease: "power3.out"
-    }, "-=0.75");
-
-    // 5. Subtle reveal of scroll indicator
-    timeline.from(".hero-scroll-indicator", {
-        opacity: 0,
-        y: -10,
-        duration: 0.8,
+        duration: 1.0,
         ease: "power2.out"
-    }, "-=0.4");
+    }, 2.5);
 }
 
 /* ==========================================================================
@@ -735,9 +766,9 @@ function initHeroScrollAnimation() {
     if (!hero) return;
 
     gsap.to(".hero-content", {
-        y: -90,
-        opacity: 0.25,
-        scale: 0.94,
+        y: -80,
+        opacity: 0.4,
+        scale: 0.96,
         ease: "none",
         scrollTrigger: {
             trigger: hero,
@@ -748,9 +779,9 @@ function initHeroScrollAnimation() {
     });
 
     gsap.to(".hero-visual", {
-        y: -130,
-        scale: 0.88,
-        opacity: 0.4,
+        y: -100,
+        scale: 0.92,
+        opacity: 0.7,
         ease: "none",
         scrollTrigger: {
             trigger: hero,
@@ -1582,11 +1613,11 @@ function initFooterAnimation() {
     const footer = document.getElementById("footer");
     if (!footer) return;
 
-    const backTop    = document.getElementById("footer-back-top");
+    const backTop = document.getElementById("footer-back-top");
     const splitLines = footer.querySelectorAll("[data-footer-split]");
-    const animItems  = footer.querySelectorAll(".footer-anim");
-    const links      = footer.querySelectorAll(".footer-link, .footer-social-icon");
-    const lineFill   = document.getElementById("footer-line-fill");
+    const animItems = footer.querySelectorAll(".footer-anim");
+    const links = footer.querySelectorAll(".footer-link, .footer-social-icon");
+    const lineFill = document.getElementById("footer-line-fill");
 
     if (backTop) {
         backTop.addEventListener("click", (e) => {
@@ -1690,11 +1721,11 @@ function initEditorialProjects() {
     if (!projects.length) return;
 
     const prefersReduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-    const isMobile       = window.matchMedia("(max-width: 768px)").matches;
+    const isMobile = window.matchMedia("(max-width: 768px)").matches;
 
     projects.forEach((proj, index) => {
         const visual = proj.querySelector(".ep-project-visual");
-        const inner  = proj.querySelector(".ep-project-inner");
+        const inner = proj.querySelector(".ep-project-inner");
         if (!visual || !inner) return;
 
         const contentItems = inner.querySelectorAll(
