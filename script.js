@@ -30,6 +30,8 @@ document.addEventListener("DOMContentLoaded", () => {
     initMobileMenuOverlay();
     initHero3DIcon();
     initServicesHorizontalScroll();
+    initEditorialProjects();
+    initFooterAnimation();
 
     // Hide main elements immediately to prevent flash of content during loading
     gsap.set(".reveal-element", { opacity: 0, y: 30 });
@@ -1137,4 +1139,288 @@ function initServicesHorizontalScroll() {
     });
 }
 
+/* ==========================================================================
+   13. FOOTER — SCROLL REVEAL & INTERACTIONS
+   ========================================================================== */
 
+function initFooterAnimation() {
+    const footer = document.getElementById("footer");
+    if (!footer) return;
+
+    const backTop   = document.getElementById("footer-back-top");
+    const splitLines = footer.querySelectorAll("[data-footer-split]");
+    const animItems  = footer.querySelectorAll(".footer-anim");
+    const pills      = footer.querySelectorAll(".footer-pill");
+    const outline    = footer.querySelector(".footer-outline");
+    const orbs       = footer.querySelectorAll(".footer-orb");
+    const orbitRing  = footer.querySelector(".footer-orbit-ring");
+
+    if (backTop) {
+        backTop.addEventListener("click", (e) => {
+            e.preventDefault();
+            window.scrollTo({ top: 0, behavior: "smooth" });
+        });
+    }
+
+    /* Split mega title into animated characters */
+    splitLines.forEach((line) => {
+        const text = line.textContent.trim();
+        line.innerHTML = text.split("").map((char) => {
+            if (char === " ") return `<span class="footer-char">&nbsp;</span>`;
+            return `<span class="footer-char">${char}</span>`;
+        }).join("");
+    });
+
+    const prefersReduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    if (prefersReduced) {
+        gsap.set(animItems, { opacity: 1, y: 0 });
+        gsap.set(".footer-char", { opacity: 1, y: 0, rotateX: 0, filter: "blur(0px)" });
+        return;
+    }
+
+    /* Staggered block reveals */
+    gsap.fromTo(animItems,
+        { opacity: 0, y: 55, rotateX: 12 },
+        {
+            opacity: 1,
+            y: 0,
+            rotateX: 0,
+            duration: 1,
+            ease: "power3.out",
+            stagger: 0.14,
+            scrollTrigger: {
+                trigger: footer,
+                start: "top 85%",
+                toggleActions: "play none none reverse"
+            }
+        }
+    );
+
+    /* Character cascade on mega title */
+    const chars = footer.querySelectorAll(".footer-char");
+    if (chars.length) {
+        gsap.fromTo(chars,
+            { opacity: 0, y: 80, rotateX: -90, filter: "blur(8px)" },
+            {
+                opacity: 1,
+                y: 0,
+                rotateX: 0,
+                filter: "blur(0px)",
+                duration: 0.7,
+                ease: "back.out(1.4)",
+                stagger: 0.025,
+                scrollTrigger: {
+                    trigger: ".footer-stage",
+                    start: "top 80%",
+                    toggleActions: "play none none reverse"
+                }
+            }
+        );
+    }
+
+    /* Navigation pills pop in */
+    if (pills.length) {
+        gsap.fromTo(pills,
+            { opacity: 0, scale: 0.6, y: 30 },
+            {
+                opacity: 1,
+                scale: 1,
+                y: 0,
+                duration: 0.65,
+                ease: "back.out(2)",
+                stagger: 0.08,
+                scrollTrigger: {
+                    trigger: ".footer-pills",
+                    start: "top 88%",
+                    toggleActions: "play none none reverse"
+                }
+            }
+        );
+    }
+
+    /* Parallax on background elements */
+    if (outline) {
+        gsap.to(outline, {
+            y: -80,
+            scale: 1.06,
+            ease: "none",
+            scrollTrigger: {
+                trigger: footer,
+                start: "top bottom",
+                end: "bottom top",
+                scrub: 1.8
+            }
+        });
+    }
+
+    orbs.forEach((orb, i) => {
+        gsap.to(orb, {
+            y: i % 2 === 0 ? -40 : 30,
+            x: i % 2 === 0 ? 20 : -25,
+            ease: "none",
+            scrollTrigger: {
+                trigger: footer,
+                start: "top bottom",
+                end: "bottom top",
+                scrub: 2 + i * 0.3
+            }
+        });
+    });
+
+    if (orbitRing) {
+        gsap.fromTo(orbitRing,
+            { scale: 0.7, opacity: 0 },
+            {
+                scale: 1,
+                opacity: 1,
+                duration: 1.6,
+                ease: "power3.out",
+                scrollTrigger: {
+                    trigger: ".footer-stage",
+                    start: "top 85%",
+                    toggleActions: "play none none none"
+                }
+            }
+        );
+    }
+
+    /* Pill label scramble on hover */
+    const scrambleChars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+    pills.forEach((pill) => {
+        const label = pill.querySelector(".footer-pill-label");
+        if (!label) return;
+        const original = label.textContent;
+
+        pill.addEventListener("mouseenter", () => {
+            let frame = 0;
+            const maxFrames = 8;
+            const scramble = setInterval(() => {
+                label.textContent = original.split("").map((c, i) => {
+                    if (c === " ") return " ";
+                    if (i < frame) return original[i];
+                    return scrambleChars[Math.floor(Math.random() * scrambleChars.length)];
+                }).join("");
+                frame++;
+                if (frame > maxFrames) {
+                    clearInterval(scramble);
+                    label.textContent = original;
+                }
+            }, 40);
+        });
+    });
+}
+
+/* ==========================================================================
+   14. EDITORIAL PROJECTS — APPLE SPLIT-SCREEN ENGINE
+   ========================================================================== */
+
+function initEditorialProjects() {
+    const projects = document.querySelectorAll(".ep-project");
+    if (!projects.length) return;
+
+    const prefersReduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    const isMobile       = window.matchMedia("(max-width: 768px)").matches;
+
+    projects.forEach((proj, index) => {
+        const visual = proj.querySelector(".ep-project-visual");
+        const inner  = proj.querySelector(".ep-project-inner");
+        if (!visual || !inner) return;
+
+        const contentItems = inner.querySelectorAll(
+            ".ep-category, .ep-title, .ep-description, .ep-meta-row, .ep-actions"
+        );
+
+        if (prefersReduced) return;
+
+        const scrollStart = isMobile ? "top 88%" : "top 78%";
+
+        /* Live preview — slide in (lighter on mobile) */
+        gsap.fromTo(visual,
+            isMobile
+                ? { opacity: 0, y: 36, scale: 0.97 }
+                : { opacity: 0, x: -80, scale: 0.92, rotateY: 10 },
+            {
+                opacity: 1,
+                x: 0,
+                y: 0,
+                scale: 1,
+                rotateY: 0,
+                duration: isMobile ? 0.85 : 1.15,
+                ease: "power3.out",
+                scrollTrigger: {
+                    trigger: proj,
+                    start: scrollStart,
+                    toggleActions: "play none none reverse"
+                }
+            }
+        );
+
+        /* Project copy — stagger in */
+        gsap.fromTo(contentItems,
+            isMobile
+                ? { opacity: 0, y: 28 }
+                : { opacity: 0, y: 40, filter: "blur(6px)" },
+            {
+                opacity: 1,
+                y: 0,
+                filter: "blur(0px)",
+                duration: isMobile ? 0.8 : 0.95,
+                ease: "power3.out",
+                stagger: isMobile ? 0.06 : 0.08,
+                delay: 0.1,
+                scrollTrigger: {
+                    trigger: proj,
+                    start: scrollStart,
+                    toggleActions: "play none none reverse"
+                }
+            }
+        );
+
+        /* Parallax — desktop only */
+        if (!isMobile) {
+            gsap.to(visual, {
+                y: index % 2 === 0 ? -35 : -20,
+                ease: "none",
+                scrollTrigger: {
+                    trigger: proj,
+                    start: "top bottom",
+                    end: "bottom top",
+                    scrub: 1.6
+                }
+            });
+
+            gsap.to(inner, {
+                y: 20,
+                ease: "none",
+                scrollTrigger: {
+                    trigger: proj,
+                    start: "top bottom",
+                    end: "bottom top",
+                    scrub: 1.6
+                }
+            });
+        }
+    });
+
+    /* Section header entrance */
+    const headerItems = document.querySelectorAll(
+        ".ep-header .section-tag, .ep-header .ep-section-title, .ep-header .ep-section-sub"
+    );
+    if (headerItems.length && !prefersReduced) {
+        gsap.fromTo(headerItems,
+            { opacity: 0, y: 50 },
+            {
+                opacity: 1,
+                y: 0,
+                duration: 1.1,
+                ease: "power4.out",
+                stagger: 0.12,
+                scrollTrigger: {
+                    trigger: ".ep-header",
+                    start: "top 82%",
+                    toggleActions: "play none none none"
+                }
+            }
+        );
+    }
+}
