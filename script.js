@@ -40,7 +40,7 @@ document.addEventListener("DOMContentLoaded", () => {
     // Core Timelines
     prepareHeroSubtitle();
     initPreloader();
-    initScrollDrivenTransitions();
+    initFullPageAnimations();
 });
 
 /* ==========================================================================
@@ -524,12 +524,13 @@ function prepareHeroSubtitle() {
 function initPreloader() {
     const preloader = document.getElementById("preloader");
     const introName = document.getElementById("intro-name");
+    const introAuthor = document.getElementById("intro-author");
+    const loaderBar = document.getElementById("intro-loader-bar");
     if (!preloader || !introName) {
         playEntranceReveal();
         return;
     }
 
-    // Split text into characters
     const text = introName.textContent.trim();
     introName.innerHTML = text.split("").map(char => {
         if (char === " ") return `<span class="intro-char char-space">&nbsp;</span>`;
@@ -538,16 +539,11 @@ function initPreloader() {
 
     const chars = introName.querySelectorAll(".intro-char:not(.char-space)");
 
-    // Disable scrolling while loading
     document.body.style.overflow = "hidden";
 
-    // Set initial state (0s)
-    gsap.set(chars, {
-        opacity: 0,
-        y: 30,
-        filter: "blur(20px)",
-        scale: 1.0
-    });
+    gsap.set(chars, { opacity: 0, y: 28, filter: "blur(18px)" });
+    if (introAuthor) gsap.set(introAuthor, { opacity: 0, y: 12, letterSpacing: "0.1em" });
+    if (loaderBar) gsap.set(loaderBar, { width: "0%" });
 
     const tl = gsap.timeline({
         onComplete: () => {
@@ -556,37 +552,49 @@ function initPreloader() {
         }
     });
 
-    // 0.3s: Text fades in, blur decreases from 20px to 0px, slight upward movement
-    // 1s: Letters reveal with stagger effect, smooth cinematic easing, elegant luxury motion
-    // 1.8s: Text fully visible, holds briefly
     tl.to(chars, {
         opacity: 1,
         y: 0,
         filter: "blur(0px)",
-        stagger: 0.06,
-        duration: 0.8,
+        stagger: 0.055,
+        duration: 0.75,
         ease: "power4.out"
-    }, 0.3);
+    }, 0.25);
 
-    // 2.5s: Text scales from 100% to 115%, opacity fades to 0, slight blur returns
-    tl.to(chars, {
-        scale: 1.15,
+    if (introAuthor) {
+        tl.to(introAuthor, {
+            opacity: 1,
+            y: 0,
+            letterSpacing: "0.22em",
+            duration: 0.9,
+            ease: "power3.out"
+        }, 0.85);
+    }
+
+    if (loaderBar) {
+        tl.to(loaderBar, {
+            width: "100%",
+            duration: 1.6,
+            ease: "power2.inOut"
+        }, 0.4);
+    }
+
+    tl.to([chars, introAuthor].filter(Boolean), {
         opacity: 0,
-        filter: "blur(12px)",
-        stagger: 0.03,
-        duration: 0.6,
-        ease: "power3.inOut"
-    }, 2.5);
+        y: -16,
+        filter: "blur(10px)",
+        stagger: 0.02,
+        duration: 0.55,
+        ease: "power3.in"
+    }, 2.4);
 
-    // 2.5s: Screen transitions smoothly into homepage (preloader overlay opacity fades to 0)
     tl.to(preloader, {
         opacity: 0,
-        duration: 0.7,
+        duration: 0.65,
         ease: "power3.inOut"
-    }, 2.5);
+    }, 2.4);
 
-    // 2.5s: Proactively trigger homepage content reveal for seamless overlay blend
-    tl.call(playEntranceReveal, null, 2.5);
+    tl.call(playEntranceReveal, null, 2.4);
 }
 
 function playEntranceReveal() {
@@ -643,25 +651,452 @@ function playEntranceReveal() {
 }
 
 /* ==========================================================================
-   8. SCROLL-DRIVEN TRANSITIONS (FADE-IN-UP & CLIP-PATH REVEAL)
+   8. FULL-PAGE SECTION ANIMATION ENGINE
    ========================================================================== */
 
-function initScrollDrivenTransitions() {
-    // Standard Fade-In-Up section triggers
-    const revealItems = document.querySelectorAll(".scroll-reveal");
+function initFullPageAnimations() {
+    const prefersReduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    if (prefersReduced) return;
 
-    revealItems.forEach((item) => {
-        gsap.fromTo(item,
-            { opacity: 0, y: 55 },
+    injectSectionDecorations();
+    initHeroScrollAnimation();
+    initMarqueeSectionAnimation();
+    initAboutSectionAnimation();
+    initServicesLabelAnimation();
+    initSkillsPillsAnimation();
+    initContactSectionAnimation();
+    initFooterMetaAnimation();
+    initSectionParallax();
+    initEnhancedScrollReveals();
+}
+
+function injectSectionDecorations() {
+    const sections = document.querySelectorAll(".page-section");
+
+    sections.forEach((section, index) => {
+        if (index === 0) return;
+
+        const line = document.createElement("div");
+        line.className = "section-anim-line";
+        line.setAttribute("aria-hidden", "true");
+        section.prepend(line);
+
+        const glow = document.createElement("div");
+        glow.className = `section-anim-glow section-anim-glow--${index % 2 === 0 ? "right" : "left"}`;
+        glow.setAttribute("aria-hidden", "true");
+        section.prepend(glow);
+
+        gsap.fromTo(line,
+            { scaleX: 0, opacity: 0 },
+            {
+                scaleX: 1,
+                opacity: 1,
+                duration: 1.4,
+                ease: "power3.inOut",
+                scrollTrigger: {
+                    trigger: section,
+                    start: "top 92%",
+                    toggleActions: "play none none reverse"
+                }
+            }
+        );
+
+        gsap.fromTo(glow,
+            { opacity: 0, scale: 0.8 },
+            {
+                opacity: 1,
+                scale: 1,
+                duration: 1.6,
+                ease: "power2.out",
+                scrollTrigger: {
+                    trigger: section,
+                    start: "top 90%",
+                    toggleActions: "play none none reverse"
+                }
+            }
+        );
+    });
+}
+
+function splitWordsForAnimation(element, wordClass) {
+    if (!element) return [];
+    const text = element.textContent.trim();
+    const words = text.split(/\s+/);
+    element.innerHTML = words.map((word) => {
+        return `<span class="anim-word-wrap">` +
+            `<span class="${wordClass}">${word}</span>` +
+            `</span>`;
+    }).join(" ");
+    return element.querySelectorAll(`.${wordClass}`);
+}
+
+function initHeroScrollAnimation() {
+    const hero = document.querySelector(".hero-section");
+    if (!hero) return;
+
+    gsap.to(".hero-content", {
+        y: -90,
+        opacity: 0.25,
+        scale: 0.94,
+        ease: "none",
+        scrollTrigger: {
+            trigger: hero,
+            start: "top top",
+            end: "bottom top",
+            scrub: 1.2
+        }
+    });
+
+    gsap.to(".hero-visual", {
+        y: -130,
+        scale: 0.88,
+        opacity: 0.4,
+        ease: "none",
+        scrollTrigger: {
+            trigger: hero,
+            start: "top top",
+            end: "bottom top",
+            scrub: 1.2
+        }
+    });
+
+    gsap.to(".hero-backdrop-glow", {
+        scale: 1.45,
+        opacity: 0.35,
+        ease: "none",
+        scrollTrigger: {
+            trigger: hero,
+            start: "top top",
+            end: "bottom top",
+            scrub: 1.2
+        }
+    });
+
+    gsap.to(".hero-scroll-indicator", {
+        opacity: 0,
+        y: 20,
+        ease: "none",
+        scrollTrigger: {
+            trigger: hero,
+            start: "top top",
+            end: "40% top",
+            scrub: 0.8
+        }
+    });
+}
+
+function initMarqueeSectionAnimation() {
+    const marquee = document.querySelector(".marquee-section");
+    if (!marquee) return;
+
+    gsap.fromTo(marquee,
+        { opacity: 0, y: 50, filter: "blur(10px)" },
+        {
+            opacity: 1,
+            y: 0,
+            filter: "blur(0px)",
+            duration: 1.2,
+            ease: "power3.out",
+            scrollTrigger: {
+                trigger: marquee,
+                start: "top 90%",
+                toggleActions: "play none none reverse"
+            }
+        }
+    );
+
+    gsap.fromTo(".marquee-content",
+        { scale: 0.96 },
+        {
+            scale: 1,
+            duration: 1.4,
+            ease: "power2.out",
+            scrollTrigger: {
+                trigger: marquee,
+                start: "top 88%",
+                toggleActions: "play none none reverse"
+            }
+        }
+    );
+}
+
+function initAboutSectionAnimation() {
+    const about = document.querySelector(".about-section");
+    const tagline = document.querySelector(".about-tagline");
+    if (!about || !tagline) return;
+
+    const words = splitWordsForAnimation(tagline, "anim-word");
+    gsap.set(words, { y: "110%", opacity: 0, filter: "blur(8px)" });
+
+    gsap.to(words, {
+        y: "0%",
+        opacity: 1,
+        filter: "blur(0px)",
+        duration: 1,
+        ease: "power4.out",
+        stagger: 0.04,
+        scrollTrigger: {
+            trigger: ".about-info",
+            start: "top 82%",
+            toggleActions: "play none none reverse"
+        }
+    });
+
+    gsap.fromTo(".about-info",
+        { opacity: 0, y: 40 },
+        {
+            opacity: 1,
+            y: 0,
+            duration: 1.1,
+            ease: "power3.out",
+            scrollTrigger: {
+                trigger: ".about-info",
+                start: "top 85%",
+                toggleActions: "play none none reverse"
+            }
+        }
+    );
+}
+
+function initServicesLabelAnimation() {
+    const label = document.querySelector(".services-label-row .section-tag");
+    if (!label) return;
+
+    gsap.fromTo(label,
+        { opacity: 0, x: -40, filter: "blur(6px)" },
+        {
+            opacity: 1,
+            x: 0,
+            filter: "blur(0px)",
+            duration: 1.1,
+            ease: "power4.out",
+            scrollTrigger: {
+                trigger: ".services-section",
+                start: "top 80%",
+                toggleActions: "play none none reverse"
+            }
+        }
+    );
+}
+
+function initSkillsPillsAnimation() {
+    const pills = document.querySelectorAll(".skill-icon-pill");
+    const heading = document.querySelector(".skills-group-heading");
+    if (!pills.length) return;
+
+    gsap.set(pills, { opacity: 0, y: 50, scale: 0.6, rotate: -12 });
+
+    if (heading) {
+        gsap.fromTo(heading,
+            { opacity: 0, x: -30 },
+            {
+                opacity: 1,
+                x: 0,
+                duration: 0.9,
+                ease: "power3.out",
+                scrollTrigger: {
+                    trigger: ".skills-group",
+                    start: "top 85%",
+                    toggleActions: "play none none reverse"
+                }
+            }
+        );
+    }
+
+    gsap.to(pills, {
+        opacity: 1,
+        y: 0,
+        scale: 1,
+        rotate: 0,
+        duration: 0.85,
+        ease: "back.out(1.6)",
+        stagger: 0.1,
+        scrollTrigger: {
+            trigger: ".skills-icon-row",
+            start: "top 88%",
+            toggleActions: "play none none reverse"
+        }
+    });
+}
+
+function initContactSectionAnimation() {
+    const headline = document.querySelector(".contact-headline");
+    const subtitle = document.querySelector(".contact-subtitle");
+    const formGroups = document.querySelectorAll(".contact-form .input-group");
+    const submitBtn = document.querySelector(".btn-submit");
+
+    if (headline) {
+        const words = splitWordsForAnimation(headline, "anim-word");
+        gsap.set(words, { y: "110%", opacity: 0, filter: "blur(6px)" });
+        gsap.to(words, {
+            y: "0%",
+            opacity: 1,
+            filter: "blur(0px)",
+            duration: 0.9,
+            ease: "power4.out",
+            stagger: 0.035,
+            scrollTrigger: {
+                trigger: ".contact-info",
+                start: "top 82%",
+                toggleActions: "play none none reverse"
+            }
+        });
+    }
+
+    if (subtitle) {
+        gsap.fromTo(subtitle,
+            { opacity: 0, y: 30 },
             {
                 opacity: 1,
                 y: 0,
-                duration: 1.1,
+                duration: 1,
+                ease: "power3.out",
+                delay: 0.2,
+                scrollTrigger: {
+                    trigger: ".contact-info",
+                    start: "top 82%",
+                    toggleActions: "play none none reverse"
+                }
+            }
+        );
+    }
+
+    if (formGroups.length) {
+        gsap.fromTo(formGroups,
+            { opacity: 0, x: 50, filter: "blur(5px)" },
+            {
+                opacity: 1,
+                x: 0,
+                filter: "blur(0px)",
+                duration: 0.9,
+                ease: "power3.out",
+                stagger: 0.12,
+                scrollTrigger: {
+                    trigger: ".contact-form-wrapper",
+                    start: "top 85%",
+                    toggleActions: "play none none reverse"
+                }
+            }
+        );
+    }
+
+    if (submitBtn) {
+        gsap.fromTo(submitBtn,
+            { opacity: 0, y: 24, scale: 0.95 },
+            {
+                opacity: 1,
+                y: 0,
+                scale: 1,
+                duration: 0.8,
+                ease: "back.out(1.4)",
+                delay: 0.35,
+                scrollTrigger: {
+                    trigger: ".contact-form-wrapper",
+                    start: "top 85%",
+                    toggleActions: "play none none reverse"
+                }
+            }
+        );
+    }
+}
+
+function initFooterMetaAnimation() {
+    const metaItems = document.querySelectorAll(".footer-meta-item");
+    if (!metaItems.length) return;
+
+    gsap.fromTo(metaItems,
+        { opacity: 0, x: -24, scale: 0.96 },
+        {
+            opacity: 1,
+            x: 0,
+            scale: 1,
+            duration: 0.7,
+            ease: "power3.out",
+            stagger: 0.1,
+            scrollTrigger: {
+                trigger: ".footer-meta",
+                start: "top 92%",
+                toggleActions: "play none none reverse"
+            }
+        }
+    );
+}
+
+function initSectionParallax() {
+    const containers = document.querySelectorAll(
+        ".about-section .section-container, .skills-section .section-container, .contact-section .section-container"
+    );
+
+    containers.forEach((container) => {
+        gsap.to(container, {
+            y: -30,
+            ease: "none",
+            scrollTrigger: {
+                trigger: container,
+                start: "top bottom",
+                end: "bottom top",
+                scrub: 1.5
+            }
+        });
+    });
+
+    document.querySelectorAll(".section-anim-glow").forEach((glow, i) => {
+        gsap.to(glow, {
+            y: i % 2 === 0 ? -60 : 60,
+            x: i % 2 === 0 ? 30 : -30,
+            ease: "none",
+            scrollTrigger: {
+                trigger: glow.parentElement,
+                start: "top bottom",
+                end: "bottom top",
+                scrub: 1.8
+            }
+        });
+    });
+}
+
+function initEnhancedScrollReveals() {
+    const revealItems = document.querySelectorAll(".scroll-reveal:not(.ep-header)");
+
+    revealItems.forEach((item) => {
+        const isSectionTag = item.classList.contains("section-header") ||
+            item.querySelector(".section-tag");
+
+        gsap.fromTo(item,
+            isSectionTag
+                ? { opacity: 0, x: -50, filter: "blur(6px)" }
+                : { opacity: 0, y: 60, filter: "blur(8px)" },
+            {
+                opacity: 1,
+                x: 0,
+                y: 0,
+                filter: "blur(0px)",
+                duration: 1.2,
                 ease: "power3.out",
                 scrollTrigger: {
                     trigger: item,
                     start: "top 85%",
-                    toggleActions: "play none none none"
+                    toggleActions: "play none none reverse"
+                }
+            }
+        );
+    });
+
+    document.querySelectorAll(".section-tag").forEach((tag) => {
+        if (tag.closest(".scroll-reveal")) return;
+
+        gsap.fromTo(tag,
+            { opacity: 0, x: -40, filter: "blur(4px)" },
+            {
+                opacity: 1,
+                x: 0,
+                filter: "blur(0px)",
+                duration: 1,
+                ease: "power4.out",
+                scrollTrigger: {
+                    trigger: tag,
+                    start: "top 88%",
+                    toggleActions: "play none none reverse"
                 }
             }
         );
@@ -1147,13 +1582,11 @@ function initFooterAnimation() {
     const footer = document.getElementById("footer");
     if (!footer) return;
 
-    const backTop   = document.getElementById("footer-back-top");
+    const backTop    = document.getElementById("footer-back-top");
     const splitLines = footer.querySelectorAll("[data-footer-split]");
     const animItems  = footer.querySelectorAll(".footer-anim");
-    const pills      = footer.querySelectorAll(".footer-pill");
-    const outline    = footer.querySelector(".footer-outline");
-    const orbs       = footer.querySelectorAll(".footer-orb");
-    const orbitRing  = footer.querySelector(".footer-orbit-ring");
+    const links      = footer.querySelectorAll(".footer-link, .footer-social-icon");
+    const lineFill   = document.getElementById("footer-line-fill");
 
     if (backTop) {
         backTop.addEventListener("click", (e) => {
@@ -1162,7 +1595,6 @@ function initFooterAnimation() {
         });
     }
 
-    /* Split mega title into animated characters */
     splitLines.forEach((line) => {
         const text = line.textContent.trim();
         line.innerHTML = text.split("").map((char) => {
@@ -1174,140 +1606,79 @@ function initFooterAnimation() {
     const prefersReduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
     if (prefersReduced) {
         gsap.set(animItems, { opacity: 1, y: 0 });
-        gsap.set(".footer-char", { opacity: 1, y: 0, rotateX: 0, filter: "blur(0px)" });
+        gsap.set(".footer-char", { opacity: 1, y: 0 });
+        if (lineFill) gsap.set(lineFill, { width: "100%" });
         return;
     }
 
-    /* Staggered block reveals */
     gsap.fromTo(animItems,
-        { opacity: 0, y: 55, rotateX: 12 },
+        { opacity: 0, y: 30 },
         {
             opacity: 1,
             y: 0,
-            rotateX: 0,
-            duration: 1,
+            duration: 0.8,
             ease: "power3.out",
-            stagger: 0.14,
+            stagger: 0.1,
             scrollTrigger: {
                 trigger: footer,
-                start: "top 85%",
+                start: "top 88%",
                 toggleActions: "play none none reverse"
             }
         }
     );
 
-    /* Character cascade on mega title */
     const chars = footer.querySelectorAll(".footer-char");
     if (chars.length) {
         gsap.fromTo(chars,
-            { opacity: 0, y: 80, rotateX: -90, filter: "blur(8px)" },
+            { opacity: 0, y: 20 },
             {
                 opacity: 1,
                 y: 0,
-                rotateX: 0,
-                filter: "blur(0px)",
-                duration: 0.7,
-                ease: "back.out(1.4)",
-                stagger: 0.025,
-                scrollTrigger: {
-                    trigger: ".footer-stage",
-                    start: "top 80%",
-                    toggleActions: "play none none reverse"
-                }
-            }
-        );
-    }
-
-    /* Navigation pills pop in */
-    if (pills.length) {
-        gsap.fromTo(pills,
-            { opacity: 0, scale: 0.6, y: 30 },
-            {
-                opacity: 1,
-                scale: 1,
-                y: 0,
-                duration: 0.65,
-                ease: "back.out(2)",
-                stagger: 0.08,
-                scrollTrigger: {
-                    trigger: ".footer-pills",
-                    start: "top 88%",
-                    toggleActions: "play none none reverse"
-                }
-            }
-        );
-    }
-
-    /* Parallax on background elements */
-    if (outline) {
-        gsap.to(outline, {
-            y: -80,
-            scale: 1.06,
-            ease: "none",
-            scrollTrigger: {
-                trigger: footer,
-                start: "top bottom",
-                end: "bottom top",
-                scrub: 1.8
-            }
-        });
-    }
-
-    orbs.forEach((orb, i) => {
-        gsap.to(orb, {
-            y: i % 2 === 0 ? -40 : 30,
-            x: i % 2 === 0 ? 20 : -25,
-            ease: "none",
-            scrollTrigger: {
-                trigger: footer,
-                start: "top bottom",
-                end: "bottom top",
-                scrub: 2 + i * 0.3
-            }
-        });
-    });
-
-    if (orbitRing) {
-        gsap.fromTo(orbitRing,
-            { scale: 0.7, opacity: 0 },
-            {
-                scale: 1,
-                opacity: 1,
-                duration: 1.6,
+                duration: 0.5,
                 ease: "power3.out",
+                stagger: 0.02,
                 scrollTrigger: {
-                    trigger: ".footer-stage",
+                    trigger: ".footer-cta",
                     start: "top 85%",
+                    toggleActions: "play none none reverse"
+                }
+            }
+        );
+    }
+
+    if (lineFill) {
+        gsap.fromTo(lineFill,
+            { width: "0%" },
+            {
+                width: "100%",
+                duration: 1.2,
+                ease: "power2.inOut",
+                scrollTrigger: {
+                    trigger: ".footer-line",
+                    start: "top 90%",
                     toggleActions: "play none none none"
                 }
             }
         );
     }
 
-    /* Pill label scramble on hover */
-    const scrambleChars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
-    pills.forEach((pill) => {
-        const label = pill.querySelector(".footer-pill-label");
-        if (!label) return;
-        const original = label.textContent;
-
-        pill.addEventListener("mouseenter", () => {
-            let frame = 0;
-            const maxFrames = 8;
-            const scramble = setInterval(() => {
-                label.textContent = original.split("").map((c, i) => {
-                    if (c === " ") return " ";
-                    if (i < frame) return original[i];
-                    return scrambleChars[Math.floor(Math.random() * scrambleChars.length)];
-                }).join("");
-                frame++;
-                if (frame > maxFrames) {
-                    clearInterval(scramble);
-                    label.textContent = original;
+    if (links.length) {
+        gsap.fromTo(links,
+            { opacity: 0, x: 16 },
+            {
+                opacity: 1,
+                x: 0,
+                duration: 0.5,
+                ease: "power3.out",
+                stagger: 0.05,
+                scrollTrigger: {
+                    trigger: ".footer-columns",
+                    start: "top 88%",
+                    toggleActions: "play none none reverse"
                 }
-            }, 40);
-        });
-    });
+            }
+        );
+    }
 }
 
 /* ==========================================================================

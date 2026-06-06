@@ -31,8 +31,16 @@
 
     <!-- Cinematic Preloader -->
     <div class="preloader" id="preloader">
+        <div class="preloader-blur-sweep" aria-hidden="true"></div>
         <div class="preloader-content">
-            <h1 class="intro-name" id="intro-name">NEXUS STUDIO</h1>
+            <div class="intro-brand">
+                <h1 class="intro-name" id="intro-name">NEXUS STUDIO</h1>
+                <p class="intro-author" id="intro-author">Mohamed El-Hefnawy</p>
+            </div>
+            <div class="intro-loader" aria-hidden="true">
+                <span class="intro-loader-track"></span>
+                <span class="intro-loader-bar" id="intro-loader-bar"></span>
+            </div>
         </div>
     </div>
 
@@ -122,7 +130,7 @@
     <!-- Main Container -->
     <main>
         <!-- Hero Section -->
-        <section class="hero-section" id="hero">
+        <section class="hero-section page-section" id="hero">
             <div class="hero-backdrop-glow"></div>
             <div class="hero-container hero-two-col">
 
@@ -164,7 +172,7 @@
         </section>
 
         <!-- Infinite Horizontal Marquee -->
-        <section class="marquee-section">
+        <section class="marquee-section page-section">
             <div class="marquee-wrapper">
                 <div class="marquee-content">
                     <span>FRONTEND DEVELOPER</span> <i class="fa-solid fa-wand-magic-sparkles marquee-star"></i>
@@ -183,7 +191,7 @@
         </section>
 
         <!-- About Me Section -->
-        <section class="about-section" id="about">
+        <section class="about-section page-section" id="about">
             <div class="section-container">
                 <div class="section-header scroll-reveal">
                     <span class="section-tag">01 &lt;About &gt;</span>
@@ -191,7 +199,7 @@
 
                 <div class="about-layout">
                     <!-- Column 1: Bio Text -->
-                    <div class="about-info scroll-reveal">
+                    <div class="about-info">
                         <p class="about-tagline">
                             I help brands establish a strong digital presence through thoughtful design and reliable web
                             development. Focused on creating experiences that are intuitive, responsive, and built to
@@ -203,7 +211,7 @@
         </section>
 
         <!-- Services Section -->
-        <section class="services-section" id="services">
+        <section class="services-section page-section" id="services">
             <!-- Outer wrapper is pinned by GSAP -->
             <div class="services-pin-wrap">
 
@@ -293,10 +301,10 @@
         </section>
 
         <!-- Selected Projects Section -->
-        <section class="projects-section" id="projects">
+        <section class="projects-section page-section" id="projects">
 
             <!-- Section intro header -->
-            <div class="ep-header scroll-reveal">
+            <div class="ep-header">
                 <span class="section-tag">03 &lt;Work&gt;</span>
             </div>
 
@@ -483,7 +491,7 @@
         </section>
 
         <!-- Skills Section -->
-        <section class="skills-section" id="skills">
+        <section class="skills-section page-section" id="skills">
             <div class="section-container">
                 <div class="section-header scroll-reveal">
                     <span class="section-tag">04 &lt;Skills&gt;</span>
@@ -494,23 +502,23 @@
                     <h3 class="skills-group-heading">FRONTEND</h3>
                     <div class="skills-icon-row">
                         <!-- HTML -->
-                        <div class="skill-icon-pill scroll-reveal magnetic" data-strength="20" title="HTML">
+                        <div class="skill-icon-pill magnetic" data-strength="20" title="HTML">
                             <img src="html5.svg" alt="HTML5" class="skill-icon-img">
                         </div>
                         <!-- CSS -->
-                        <div class="skill-icon-pill scroll-reveal magnetic" data-strength="20" title="CSS">
+                        <div class="skill-icon-pill magnetic" data-strength="20" title="CSS">
                             <img src="css3.svg" alt="CSS3" class="skill-icon-img">
                         </div>
                         <!-- JavaScript -->
-                        <div class="skill-icon-pill scroll-reveal magnetic" data-strength="20" title="JavaScript">
+                        <div class="skill-icon-pill magnetic" data-strength="20" title="JavaScript">
                             <img src="javascript.svg" alt="JavaScript" class="skill-icon-img">
                         </div>
                         <!-- TypeScript -->
-                        <div class="skill-icon-pill scroll-reveal magnetic" data-strength="20" title="TypeScript">
+                        <div class="skill-icon-pill magnetic" data-strength="20" title="TypeScript">
                             <img src="typescript.svg" alt="TypeScript" class="skill-icon-img">
                         </div>
                         <!-- React -->
-                        <div class="skill-icon-pill scroll-reveal magnetic" data-strength="20" title="React">
+                        <div class="skill-icon-pill magnetic" data-strength="20" title="React">
                             <img src="react.svg" alt="React" class="skill-icon-img">
                         </div>
                     </div>
@@ -520,14 +528,14 @@
         </section>
 
         <!-- Contact Section -->
-        <section class="contact-section" id="contact">
+        <section class="contact-section page-section" id="contact">
             <div class="section-container">
                 <div class="section-header scroll-reveal">
                     <span class="section-tag">05 &lt;Contact&gt;</span>
                 </div>
 
                 <div class="contact-grid">
-                    <div class="contact-info scroll-reveal">
+                    <div class="contact-info">
                         <h3 class="contact-headline">Have a project idea? Let's connect and build a system.</h3>
                         <p class="contact-subtitle">
                             Always open to collaboration, bespoke freelance systems, technical engineering, and
@@ -537,7 +545,7 @@
 
                     </div>
 
-                    <div class="contact-form-wrapper scroll-reveal">
+                    <div class="contact-form-wrapper">
                         <form class="contact-form" id="contact-form"
                             onsubmit="event.preventDefault(); alert('Transmission Received!');">
                             <div class="form-row">
@@ -569,110 +577,88 @@
         </section>
     </main>
 
-    <!-- Footer — Kinetic Cinema -->
-    <footer class="footer" id="footer">
-        <div class="footer-bg" aria-hidden="true">
-            <span class="footer-orb footer-orb-1"></span>
-            <span class="footer-orb footer-orb-2"></span>
-            <span class="footer-orb footer-orb-3"></span>
-            <p class="footer-outline">NEXUS</p>
-            <div class="footer-scanline"></div>
-        </div>
+    <!-- Footer -->
+    <footer class="footer page-section" id="footer">
+        <div class="footer-glow" aria-hidden="true"></div>
 
-        <div class="footer-marquee footer-marquee-top">
-            <div class="footer-marquee-track">
-                <div class="footer-marquee-inner">
-                    <span>Motion Design</span><i class="fa-solid fa-wand-magic-sparkles"></i>
-                    <span>3D Interactions</span><i class="fa-solid fa-wand-magic-sparkles"></i>
-                    <span>GSAP Animation</span><i class="fa-solid fa-wand-magic-sparkles"></i>
-                    <span>React &amp; TypeScript</span><i class="fa-solid fa-wand-magic-sparkles"></i>
-                    <span>Three.js</span><i class="fa-solid fa-wand-magic-sparkles"></i>
-                    <span>UI Engineering</span><i class="fa-solid fa-wand-magic-sparkles"></i>
-                </div>
-                <div class="footer-marquee-inner" aria-hidden="true">
-                    <span>Motion Design</span><i class="fa-solid fa-wand-magic-sparkles"></i>
-                    <span>3D Interactions</span><i class="fa-solid fa-wand-magic-sparkles"></i>
-                    <span>GSAP Animation</span><i class="fa-solid fa-wand-magic-sparkles"></i>
-                    <span>React &amp; TypeScript</span><i class="fa-solid fa-wand-magic-sparkles"></i>
-                    <span>Three.js</span><i class="fa-solid fa-wand-magic-sparkles"></i>
-                    <span>UI Engineering</span><i class="fa-solid fa-wand-magic-sparkles"></i>
-                </div>
-            </div>
-        </div>
-
-        <div class="footer-stage">
-            <div class="footer-orbit-ring" aria-hidden="true">
-                <span class="footer-orbit-satellite"></span>
-            </div>
-
-            <div class="footer-availability footer-anim">
-                <span class="footer-pulse-dot"></span>
-                <span>Available for Work &amp; Freelance</span>
-            </div>
-
-            <h2 class="footer-mega-title">
-                <a href="#contact" class="footer-mega-link magnetic" data-strength="22">
-                    <span class="footer-mega-line" data-footer-split>Let's build</span>
-                    <span class="footer-mega-line footer-mega-accent" data-footer-split>the extraordinary</span>
+        <div class="footer-inner">
+            <div class="footer-cta footer-anim">
+                <h2 class="footer-heading">
+                    <span data-footer-split>Let's build something great</span>
+                </h2>
+                <a href="#contact" class="footer-btn magnetic" data-strength="16">
+                    Start a Project
+                    <i class="fa-solid fa-arrow-up-right"></i>
                 </a>
-            </h2>
+            </div>
 
-            <a href="#contact" class="footer-magnetic-cta footer-anim magnetic" data-strength="18">
-                <span class="footer-magnetic-cta-text">Start a Project</span>
-                <span class="footer-magnetic-cta-icon"><i class="fa-solid fa-arrow-up-right"></i></span>
-            </a>
-        </div>
+            <div class="footer-line footer-anim" aria-hidden="true">
+                <span class="footer-line-fill" id="footer-line-fill"></span>
+            </div>
 
-        <div class="footer-marquee footer-marquee-bottom">
-            <div class="footer-marquee-track footer-marquee-track-reverse">
-                <div class="footer-marquee-inner">
-                    <span>Premium Websites</span><i class="fa-solid fa-wand-magic-sparkles"></i>
-                    <span>E-Commerce</span><i class="fa-solid fa-wand-magic-sparkles"></i>
-                    <span>Landing Pages</span><i class="fa-solid fa-wand-magic-sparkles"></i>
-                    <span>Portfolios</span><i class="fa-solid fa-wand-magic-sparkles"></i>
-                    <span>Control Panels</span><i class="fa-solid fa-wand-magic-sparkles"></i>
-                    <span>Creative Code</span><i class="fa-solid fa-wand-magic-sparkles"></i>
+            <div class="footer-columns">
+                <div class="footer-col footer-col-brand footer-anim">
+                    <span class="footer-logo-sm">NEXUS<span class="logo-dot">.</span></span>
+                    <p class="footer-tagline">Premium front-end studio crafting immersive digital experiences.</p>
+                    <div class="footer-meta">
+                        <span class="footer-meta-item footer-meta-item--available">
+                            <span class="footer-pulse-dot"></span> Available
+                        </span>
+                        <span class="footer-meta-item footer-meta-item--projects">
+                            <span class="footer-meta-dot"></span> 10 projects
+                        </span>
+                        <span class="footer-meta-item footer-meta-item--years">
+                            <span class="footer-meta-dot"></span> 2 years
+                        </span>
+                    </div>
                 </div>
-                <div class="footer-marquee-inner" aria-hidden="true">
-                    <span>Premium Websites</span><i class="fa-solid fa-wand-magic-sparkles"></i>
-                    <span>E-Commerce</span><i class="fa-solid fa-wand-magic-sparkles"></i>
-                    <span>Landing Pages</span><i class="fa-solid fa-wand-magic-sparkles"></i>
-                    <span>Portfolios</span><i class="fa-solid fa-wand-magic-sparkles"></i>
-                    <span>Control Panels</span><i class="fa-solid fa-wand-magic-sparkles"></i>
-                    <span>Creative Code</span><i class="fa-solid fa-wand-magic-sparkles"></i>
+
+                <div class="footer-col footer-anim">
+                    <h3 class="footer-col-title">Navigate</h3>
+                    <ul class="footer-link-list">
+                        <li><a href="#" class="footer-link magnetic" data-strength="12"><span class="footer-link-num">01</span>Home</a></li>
+                        <li><a href="#about" class="footer-link magnetic" data-strength="12"><span class="footer-link-num">02</span>About</a></li>
+                        <li><a href="#services" class="footer-link magnetic" data-strength="12"><span class="footer-link-num">03</span>Services</a></li>
+                        <li><a href="#projects" class="footer-link magnetic" data-strength="12"><span class="footer-link-num">04</span>Work</a></li>
+                        <li><a href="#skills" class="footer-link magnetic" data-strength="12"><span class="footer-link-num">05</span>Skills</a></li>
+                        <li><a href="#contact" class="footer-link magnetic" data-strength="12"><span class="footer-link-num">06</span>Contact</a></li>
+                    </ul>
+                </div>
+
+                <div class="footer-col footer-anim">
+                    <h3 class="footer-col-title">Connect</h3>
+                    <ul class="footer-social-list">
+                        <li>
+                            <a href="https://wa.me/201554003078" class="footer-social-icon magnetic" data-strength="14"
+                                target="_blank" rel="noopener noreferrer" aria-label="WhatsApp — NEXUS STUDIO">
+                                <span class="footer-social-icon-wrap"><i class="fa-brands fa-whatsapp"></i></span>
+                                <span class="footer-social-username">NEXUS STUDIO</span>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="https://www.facebook.com/share/1KfC5BiBzN/" class="footer-social-icon magnetic" data-strength="14"
+                                target="_blank" rel="noopener noreferrer" aria-label="Facebook — NEXUS Studio">
+                                <span class="footer-social-icon-wrap"><i class="fa-brands fa-facebook-f"></i></span>
+                                <span class="footer-social-username">NEXUS Studio</span>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="https://www.instagram.com/nexus_studio2?igsh=YzF3eDZzcnBvdGQ1" class="footer-social-icon magnetic" data-strength="14"
+                                target="_blank" rel="noopener noreferrer" aria-label="Instagram — nexus_studio2">
+                                <span class="footer-social-icon-wrap"><i class="fa-brands fa-instagram"></i></span>
+                                <span class="footer-social-username">nexus_studio2</span>
+                            </a>
+                        </li>
+                    </ul>
                 </div>
             </div>
-        </div>
 
-        <nav class="footer-pills footer-anim" aria-label="Footer navigation">
-            <a href="#" class="footer-pill magnetic" data-strength="14" data-index="01"><span class="footer-pill-num">01</span><span class="footer-pill-label">Home</span></a>
-            <a href="#about" class="footer-pill magnetic" data-strength="14" data-index="02"><span class="footer-pill-num">02</span><span class="footer-pill-label">About</span></a>
-            <a href="#services" class="footer-pill magnetic" data-strength="14" data-index="03"><span class="footer-pill-num">03</span><span class="footer-pill-label">Services</span></a>
-            <a href="#projects" class="footer-pill magnetic" data-strength="14" data-index="04"><span class="footer-pill-num">04</span><span class="footer-pill-label">Work</span></a>
-            <a href="#skills" class="footer-pill magnetic" data-strength="14" data-index="05"><span class="footer-pill-num">05</span><span class="footer-pill-label">Skills</span></a>
-            <a href="#contact" class="footer-pill magnetic" data-strength="14" data-index="06"><span class="footer-pill-num">06</span><span class="footer-pill-label">Contact</span></a>
-        </nav>
-
-        <div class="footer-deck">
-            <div class="footer-deck-brand footer-anim">
-                <span class="footer-logo-sm">NEXUS<span class="logo-dot">.</span></span>
+            <div class="footer-deck footer-anim">
                 <p class="copyright">&copy; 2026 NEXUS Studio</p>
+                <a href="#" class="footer-top magnetic" data-strength="14" id="footer-back-top" aria-label="Back to top">
+                    Back to top <i class="fa-solid fa-arrow-up"></i>
+                </a>
             </div>
-
-            <div class="footer-social-orbit footer-anim">
-                <div class="footer-social-orbit-ring" aria-hidden="true"></div>
-                <a href="https://wa.me/201554003078" class="footer-orbit-icon magnetic" data-strength="16"
-                    aria-label="WhatsApp" target="_blank" rel="noopener noreferrer"><i class="fa-brands fa-whatsapp"></i></a>
-                <a href="https://www.facebook.com/share/1KfC5BiBzN/" class="footer-orbit-icon magnetic" data-strength="16"
-                    aria-label="Facebook" target="_blank" rel="noopener noreferrer"><i class="fa-brands fa-facebook-f"></i></a>
-                <a href="https://www.instagram.com/nexus_studio2?igsh=YzF3eDZzcnBvdGQ1" class="footer-orbit-icon magnetic" data-strength="16"
-                    aria-label="Instagram" target="_blank" rel="noopener noreferrer"><i class="fa-brands fa-instagram"></i></a>
-            </div>
-
-            <a href="#" class="footer-launch-top magnetic footer-anim" data-strength="16" id="footer-back-top" aria-label="Back to top">
-                <span class="footer-launch-ring" aria-hidden="true"></span>
-                <i class="fa-solid fa-arrow-up"></i>
-            </a>
         </div>
     </footer>
 
@@ -682,11 +668,6 @@
     <!-- Script Logic -->
     <script src="script.js"></script>
 
-    <!-- Floating WhatsApp Button -->
-    <a href="https://wa.me/201554003078" class="whatsapp-float" id="whatsapp-float" target="_blank"
-        rel="noopener noreferrer" aria-label="Chat on WhatsApp">
-        <i class="fa-brands fa-whatsapp"></i>
-    </a>
 </body>
 
 </html>
